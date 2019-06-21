@@ -1,14 +1,32 @@
-# Performing Blue / Green API Connect Upgrades
+# 1. Performing Blue / Green API Connect Upgrades
 
-## Pre-Requisites
+## 1.1. Pre-Requisites
 - Ubuntu 16.0.4
 - Kubernetes 1.13
 - Helm 2.13.1
 - CoreDNS
-- [Minio] (https://www.linuxhelp.com/how-to-install-minio-server-on-ubuntu-16-04)
-- [sFTP server] (https://websiteforstudents.com/setup-retrictive-sftp-with-chroot-on-ubuntu-16-04-17-10-and-18-04/) 
+- [Minio](https://www.linuxhelp.com/how-to-install-minio-server-on-ubuntu-16-04)
+- [sFTP server](https://websiteforstudents.com/setup-retrictive-sftp-with-chroot-on-ubuntu-16-04-17-10-and-18-04/) 
 
-## Step 0. Install Kubernetes and Dependencies (Optional)
+## 1.2. Table of Contents
+
+- [1. Performing Blue / Green API Connect Upgrades](#1-performing-blue--green-api-connect-upgrades)
+- [1.1. Pre-Requisites](#11-pre-requisites)  
+- [1.2. Table of Contents](#12-table-of-contents)
+- [1.3. Install Kubernetes and Dependencies (Optional)](#13-install-kubernetes-and-dependencies-optional)
+- [1.4. Configure API Connect project](#14-configure-api-connect-project)
+- [1.5. Install the Green API Connect Stack](#15-install-the-green-api-connect-stack)
+- [1.6. Install the Blue API Connect Stack](#16-install-the-blue-api-connect-stack)
+- [1.7. Perform the Backup from Green API Connect Stack](#17-perform-the-backup-from-green-api-connect-stack)
+- [1.8. Perform Restore into the Blue API Connect Stack](#18-perform-restore-into-the-blue-api-connect-stack)
+- [1.9. Perform Backup and Restore for the Developer Portal](#19-perform-backup-and-restore-for-the-developer-portal)
+- [1.10. Perform Backup and Restore for the Analytics service](#110-perform-backup-and-restore-for-the-analytics-service)
+- [1.11. Upgrading the Blue API Connect Stack](#111-upgrading-the-blue-api-connect-stack)
+- [1.12. Perform Testing against upgraded Blue API Connect instance](#112-perform-testing-against-upgraded-blue-api-connect-instance)
+- [1.13. Reference](#113-reference)
+- [1.14. Summary](#114-summary)
+
+## 1.3. Install Kubernetes and Dependencies (Optional)
 
 1. Install Docker CE & Kubernetes (kubeadm) and initialize the Kubernetes cluster. Documentation is available on most Linux based operating system(s) and Windows machines. 
 
@@ -24,7 +42,7 @@ These instructions refer to "Green" stack and "Blue" stacks. THe "Green" Stack w
 
 5. Build your Kubernetes environment for both the API Connect Blue & Green stacks, reflecting the IP addresses for each environment before moving onto the next step.
 
-## 1. Configure API Connect project
+## 1.4. Configure API Connect project
 
 The steps to build an API Connect cloud configuration are documented [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.install.doc/tapic_install_Kubernetes_overview.html). The key file produced is the `apiconnect-up-yml` file, which contains the topology information, including hostnames and system resources allocated. The same `apiconnect-up-yml` file must be used in both the green stack and the blue stack.
 
@@ -53,7 +71,7 @@ The steps to build an API Connect cloud configuration are documented [here](http
         cassandra-backup-auth-pass: <base64_encoded_password>
     ```
 
-## 2. Install the Green API Connect Stack
+## 1.5. Install the Green API Connect Stack
 
 1. Minimal steps for installing API Connect subsystems are shown below, adjust them based on your environment, for example make sure your namespace exists before you perform the install. Full instructions are available [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.install.doc/tapic_install_Kubernetes_overview.html)
 
@@ -98,13 +116,13 @@ Sample script is available [here](install-apic.sh)
   d. Test the API using any tool or built-in API Assemyl test tool, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.toolkit.doc/task_toolkit_testing.html)
  
 
-## 3. Install the Blue API Connect Stack
+## 1.6. Install the Blue API Connect Stack
 
 1. Repeat steps 1 and 2 from the [previous section] or run the build script to create a Blue stack.
 
 2. Since the Blue stack will be restored from the Green stack, you do NOT need to perform steps 3-5. You will need to manually edit the `/etc/hosts` file on the Kubernetes host machine(s) since this environment will use the same hostnames as the Green stack but uses different IP addresses.
 
-## 4. Perform the Backup from Green API Connect Stack
+## 1.7. Perform the Backup from Green API Connect Stack
 
 1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure your executing commands from the directory where this file is located. If you make any changes to this file, after the initial install, you will need to run the `apicup subsys install manager --debug` command again.
 
@@ -123,7 +141,7 @@ Sample script is available [here](install-apic.sh)
 
 4. Make a note of the backup id, since you will need that value when you perform the restore in the Blue stack.
 
-## 5. Perform Restore into the Blue API Connect Stack
+## 1.8. Perform Restore into the Blue API Connect Stack
 
 1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure your executing commands from the directory where this file is located. If you make any changes to this file, after the initial install, you will need to run the `apicup subsys install manager --debug` command again.
 
@@ -142,17 +160,25 @@ Sample script is available [here](install-apic.sh)
 
 6. Invoke the API and make sure you get the same response as you did from the Green stack.
 
-## 6. Perform Backup and Restore for the Developer Portal
+## 1.9. Perform Backup and Restore for the Developer Portal
 
 Coming soon ....
 
-## 7. Perform Backup and Restore for the Analytics service
+## 1.10. Perform Backup and Restore for the Analytics service
 
 Coming soon ....
 
-## Reference
+## 1.11. Upgrading the Blue API Connect Stack
+
+Coming soon ....
+
+## 1.12. Perform Testing against upgraded Blue API Connect instance 
+
+Coming soon ....
+
+## 1.13. Reference
 - [Back up and restore in a Kubernetes environment](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.install.doc/tapim_K8s_overview_backup_restore.html)
 
-## Summary
+## 1.14. Summary
 
 TBD
