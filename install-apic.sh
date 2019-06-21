@@ -1,6 +1,16 @@
 #!/bin/bash
 
-source config.shlib; # load the config library functions
+#README: You must configure your environment parameters in the config.cfg file.
+
+if [ -e $PWD/config.cfg ] 
+then
+    echo 'script config file exists' $(pwd)
+else 
+    echo 'script config file is not available at $(pwd)'
+    exit
+fi
+source $PWD/../scripts/config.cfg; # load the config library functions
+#todo: add validation to make sure file exists
 
 nice_echo() {
     echo -e "\n\033[1;36m >>>>>>>>>> $1 <<<<<<<<<< \033[0m\n"
@@ -32,15 +42,15 @@ check_pods() {
     done
 }
 
-DOCKER_USERNAME=$(config_get DOCKER_USERNAME)
-DOCKER_PASSWORD=$(config_get DOCKER_PASSWORD)
-NAMESPACE=$(config_get NAMESPACE)
-DOCKER_REGISTRY=$(config_get DOCKER_REGISTRY)
+DOCKER_USERNAME=$DOCKER_USERNAME
+DOCKER_PASSWORD=$DOCKER_PASSWORD
+NAMESPACE=$NAMESPACE
+DOCKER_REGISTRY=$DOCKER_REGISTRY
 
-MANAGER_SUBSYS=$(config_get MANAGER_SUBSYS)
-GATEWAY_SUBSYS=$(config_get GATEWAY_SUBSYS)
-ANALYTICS_SUBSYS=$(config_get ANALYTICS_SUBSYS)
-PORTAL_SUBSYS=$(config_get PORTAL_SUBSYS)
+MANAGER_SUBSYS=$MANAGER_SUBSYS
+GATEWAY_SUBSYS=$GATEWAY_SUBSYS
+ANALYTICS_SUBSYS=$ANALYTICS_SUBSYS
+PORTAL_SUBSYS=$PORTAL_SUBSYS
 
 nice_echo "Check if kubernetes (kubectl) is installed"
 if which kubectl > /dev/null; then
@@ -66,7 +76,7 @@ if [ -e apiconnect-up.yml ]
 then
     echo 'apiconnect-up.yml exists' $(pwd)
 else 
-    echo 'apiconnect-up.yml is not available'
+    echo 'apiconnect-up.yml is not available at $(pwd)'
     exit
 fi
 
@@ -81,17 +91,46 @@ fi
 nice_echo "Creating Kubernetes namespace"
 kubectl create namespace ${NAMESPACE}
 
+#remove old secret
+kubectl delete secret apiconnect-image-pull-secret -n ${NAMESPACE}
+
 nice_echo "Creating docker registry secret"
 kubectl create secret docker-registry apiconnect-image-pull-secret --docker-server=${DOCKER_REGISTRY} --docker-username=${DOCKER_USERNAME} --docker-password=${DOCKER_PASSWORD} --docker-email=${DOCKER_USERNAME} --namespace ${NAMESPACE}
 
-nice_echo "Installing API Manager Subsystem"
-apicup subsys install ${MANAGER_SUBSYS} --debug
+read -p "Do you want to install the API Manager subsystem (y/n)." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    nice_echo "Installing API Manager Subsystem"
+    apicup subsys install ${MANAGER_SUBSYS} --debug
+    nice_echo "Finished Installing API Manager Subsystem. Please review logs for any issues."
+fi
 
-nice_echo "Installing Gateway Subsystem"
-apicup subsys install ${GATEWAY_SUBSYS} --debug
+read -p "Do you want to install the Gateway subsystem (y/n)." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    nice_echo "Installing Gateway Subsystem"
+    apicup subsys install ${GATEWAY_SUBSYS} --debug
+    nice_echo "Finished Installing Gateway Subsystem. Please review logs for any issues."
+fi
 
-nice_echo "Installing Analytics Subsystem"
-apicup subsys install ${ANALYTICS_SUBSYS} --debug
+read -p "Do you want to install the Analytics subsystem (y/n)." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    nice_echo "Installing Analytics Subsystem"
+    apicup subsys install ${ANALYTICS_SUBSYS} --debug
+    nice_echo "Finished Installing Analytics Subsystem. Please review logs for any issues."
+fi
 
-nice_echo "Installing Portal Subsystem"
-apicup subsys install ${PORTAL_SUBSYS} --debug
+read -p "Do you want to install the Portal subsystem (y/n)." -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    nice_echo "Installing Portal Subsystem"
+    apicup subsys install ${PORTAL_SUBSYS} --debug
+    nice_echo "Finished Installing Analytics Subsystem. Please review logs for any issues."
+fi
+
+nice_echo "Finished installing API Connect Subsystems!"

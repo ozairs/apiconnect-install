@@ -193,18 +193,87 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: rook-ceph-cluster
+  name: rook-ceph-osd
+  namespace: rook-ceph
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-ceph-mgr
   namespace: rook-ceph
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: rook-ceph-cluster
+  name: rook-ceph-osd
   namespace: rook-ceph
 rules:
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: [ "get", "list", "watch", "create", "update", "delete" ]
+---
+# Aspects of ceph-mgr that require access to the system namespace
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: rook-ceph-mgr-system
+  namespace: rook-ceph
+aggregationRule:
+  clusterRoleSelectors:
+  - matchLabels:
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: "true"
+rules: []
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: rook-ceph-mgr-system-rules
+  namespace: rook-ceph
+  labels:
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: "true"
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Aspects of ceph-mgr that operate within the cluster's namespace
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: rook-ceph-mgr
+  namespace: rook-ceph
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - ceph.rook.io
+  resources:
+  - "*"
+  verbs:
+  - "*"
 ---
 # Allow the operator to create resources in this cluster's namespace
 kind: RoleBinding
@@ -219,30 +288,77 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: rook-ceph-system
-  namespace: rook-ceph-system
+  namespace: rook-ceph
 ---
-# Allow the pods in this namespace to work with configmaps
+# Allow the osd pods in this namespace to work with configmaps
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: rook-ceph-cluster
+  name: rook-ceph-osd
   namespace: rook-ceph
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: rook-ceph-cluster
+  name: rook-ceph-osd
 subjects:
 - kind: ServiceAccount
-  name: rook-ceph-cluster
+  name: rook-ceph-osd
   namespace: rook-ceph
 ---
-apiVersion: ceph.rook.io/v1beta1
-kind: Cluster
+# Allow the ceph mgr to access the cluster-specific resources necessary for the mgr modules
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: rook-ceph-mgr
+  namespace: rook-ceph
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-mgr
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-mgr
+  namespace: rook-ceph
+---
+# Allow the ceph mgr to access the rook system resources necessary for the mgr modules
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: rook-ceph-mgr-system
+  namespace: rook-ceph
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-mgr-system
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-mgr
+  namespace: rook-ceph
+---
+# Allow the ceph mgr to access cluster-wide resources necessary for the mgr modules
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: rook-ceph-mgr-cluster  
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-mgr-cluster
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-mgr
+  namespace: rook-ceph
+---
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
 metadata:
   name: rook-ceph
   namespace: rook-ceph
-spec:
+spec:  
   dataDirHostPath: /var/lib/rook
+  mon:
+    count: 3
+    allowMultiplePerNode: true
   dashboard:
     enabled: true
   storage:
@@ -252,8 +368,8 @@ spec:
       databaseSizeMB: "1024"
       journalSizeMB: "1024"
 ---
-apiVersion: ceph.rook.io/v1beta1
-kind: Pool
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
 metadata:
   name: velox
   namespace: rook-ceph
@@ -276,13 +392,13 @@ reclaimPolicy: Delete
 EOF
 
 kubectl create namespace rook-ceph
-helm repo add rook-beta https://charts.rook.io/beta
-helm install rook-beta/rook-ceph --name rook --namespace rook-ceph-system
+helm repo add rook-stable https://charts.rook.io/stable
+helm install --namespace rook-ceph rook-stable/rook-ceph --name rook
 kubectl apply -f rook-storageclass.yml
 
 nice_echo "Stage 12: Waiting 1 minute before moving on"
 sleep 60
-check_pods rook
+check_pods rook-ceph
 
 # install pvc
 nice_echo "Stage 13: Installing pvc"
@@ -307,6 +423,5 @@ kubectl get pvc
 __pvc=$(kubectl get pvc -o name | grep testpvc)
 echo $__pvc
 until kubectl get $__pvc -o jsonpath='{.status.phase}' | grep Bound ; do kubectl get pvc && sleep 5 ; done
-
 
 nice_echo "Kubernetes successfully installed!"

@@ -1,0 +1,14 @@
+datapower:
+ # Gateway MGMT variables
+ # This value should either be 'enabled' or 'dislabled'. Default is disabled
+ webGuiManagementState: "enabled"
+ webGuiManagementPort: 9090
+ webGuiManagementLocalAddress: 0.0.0.0
+ # This value should either be 'enabled' or 'disabled'. Default is disabled
+ gatewaySshState: "enabled"
+ gatewaySshPort: 9022
+ gatewaySshLocalAddress: 0.0.0.0
+ # This value should either be 'enabled' or 'disabled'. Default is disabled
+ restManagementState: "enabled"
+ restManagementPort: 5554
+ restManagementLocalAddress: 0.0.0.0
