@@ -197,7 +197,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes hos
 5. The portal content includes three items. Verify the following items are available:
  - Portal data such as blogs, forums, etc ...
  - Portal Theming (CSS, plugins, etc ...)
- - API Consumers data, published Products & APIs, etc ...
+ - API Consumers data, published Products & APIs - This data comes from API Manager sent to Portal.
  
 ## 1.10. Perform Backup and Restore for the Analytics service
 
