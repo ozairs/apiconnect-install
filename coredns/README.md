@@ -2,7 +2,7 @@
 
 CoreDNS is a customizable DNS server that provides name resolution services. As of Kubernetes 1.11, it is the default DNS service replacing KubeDNS.
 
-CoreDNS allows you to create custom hostname to IP address mappings for your Kubernetes cluster. You can two options to configure CoreDNS
+CoreDNS allows you to create custom hostname to IP address mappings for your Kubernetes cluster. Other domains, not configured in the CoreDNS configuration will be handled by the upstream DNS server. You can choose between two options to configure CoreDNS
 
 1. Modify the default CoreDNS container
 2. Run a seperate CoreDNS container
@@ -167,7 +167,7 @@ You will build the CoreDNS in sections, create a file named `coredns-k8.yaml`:
         analytics-client IN A     10.31.19.175 ;9.24.160.16
     ```
 
-9. Apply the `coredns` config map 
+9. Apply the `coredns` config map
 
     ```
     kubectl apply -f coredns-k8.yaml
@@ -237,6 +237,15 @@ volumes:
     nameserver 9.1.2.3
     ```
 Note: Alternative (to step 4-6), you can modify the CoreDNS configuration and point to the CoreDNS container via the `upstream` configuration, see [here](https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/#configuration-of-stub-domain-and-upstream-nameserver-using-coredns)
+
+## Testing the local DNS configuration
+After applying the customization you can start a pod to validate your local DNS configurations
+```
+    kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools
+    If you don't see a command prompt, try pressing enter.
+    dnstools# host manager.ozairs.fyre.ibm.com
+    manager.ozairs.fyre.ibm.com has address 10.31.19.175
+```
 
 ## Reference
 

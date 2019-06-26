@@ -1,12 +1,13 @@
 # 1. Performing Blue / Green API Connect Upgrades
 
-## 1.1. Pre-Requisites
-- Ubuntu 16.0.4
-- Kubernetes 1.13.5
-- Helm 2.13.1
+## 1.1. Tested on these environments
+- Ubuntu 16.0.4 / Ubuntu 18.0.4
+- Kubernetes 1.12.7 / Kubernetes 1.13.5
+- Helm 2.12.3 / Helm 2.13.1
 - CoreDNS
-- [Minio](https://www.linuxhelp.com/how-to-install-minio-server-on-ubuntu-16-04)
-- [sFTP server](https://websiteforstudents.com/setup-retrictive-sftp-with-chroot-on-ubuntu-16-04-17-10-and-18-04/) 
+- [Minio](https://www.linuxhelp.com/how-to-install-minio-server-on-ubuntu-16-04) / AWS S3 / S3 compatible storage
+- [sFTP server](https://websiteforstudents.com/setup-retrictive-sftp-with-chroot-on-ubuntu-16-04-17-10-and-18-04/)
+
 - [Back up and restore in a Kubernetes environment](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.install.doc/tapim_K8s_overview_backup_restore.html)
 
 ## 1.2. Table of Contents
@@ -28,7 +29,7 @@
 
 ## 1.3. Install Kubernetes and Dependencies (Optional)
 
-1. Install Docker CE & Kubernetes (kubeadm) and initialize the Kubernetes cluster. Kubernetes documentation is available on most Linux based operating system(s) and Windows machines. 
+1. Install Docker CE & Kubernetes (kubeadm) and initialize the Kubernetes cluster. Kubernetes documentation is available on most Linux based operating system(s) and Windows machines.
 
 2. Optionally, you can install client-side tools, such as `kubectl` and `helm` within the same machine where Kubernetes is installed. Ideally, you should have these tools installed on a remote machine where you can configure your Kubernetes context (ie `export KUBECONFIG=mykubeconfig`) and perform `kubectl` and `helm` command remotely.
 
@@ -42,11 +43,13 @@ These instructions refer to "Green" stack and "Blue" stacks. THe "Green" Stack w
 
 5. Build your Kubernetes environment for both the API Connect Blue & Green stacks, reflecting the IP addresses for each environment before moving onto the next step.
 
+Note: Alternatively, you can also build your blue/green environments on a managed k8s stack, like GKE, AWS EKS, IBM IKS, etc.
+
 ## 1.4. Configure API Connect project
 
-The steps to build an API Connect cloud configuration are documented [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.install.doc/tapic_install_Kubernetes_overview.html). The key file produced is the `apiconnect-up-yml` file, which contains the topology information, including hostnames and system resources allocated. The same `apiconnect-up-yml` file must be used in both the Green and Blue stacks.
+The steps to build an API Connect cloud configuration are documented [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.install.doc/tapic_install_Kubernetes_overview.html). The key file produced is the `apiconnect-up-yml` file, which contains the topology information, including hostnames and system resources allocated. The same `apiconnect-up-yml` along with the certificate files must be used in both the Green and Blue stacks.
 
-1. Make a note of the hostnames used for your environment and the IP address for each component. You will customize the DNS server (ie CoreDNS) within Kubernetes with your hostnames. 
+1. Make a note of the hostnames used for your environment and the IP address for each component. You will customize the DNS server (ie CoreDNS) within Kubernetes with your hostnames.
     - manager.ozairs.fyre.ibm.com 10.1.2.3 ;9.1.2.3
     - platform.ozairs.fyre.ibm.com 10.1.2.3 ;9.1.2.3
     - consumer.ozairs.fyre.ibm.com 10.1.2.3 ;9.1.2.3
@@ -105,24 +108,24 @@ The steps to build an API Connect cloud configuration are documented [here](http
  * b. Register a gateway service, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/config_gateway.html)
  * c. Register an analytics service, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/config_analytics.html)
  * d. Register a portal service, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/config_portal.html)
- * e. Associate an analytics service with a gateway service, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/associate_analytics.html) 
+ * e. Associate an analytics service with a gateway service, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/associate_analytics.html)
  * f. Configure the default gateway service for each catalog, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/task_cmc_config_catalogDefaults.html)
  * g. Configure a provider organization account, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.cmc.doc/create_organization.html)
 
  5. Perform the following steps in the API Manager (https://manager.ozairs.fyre.ibm.com/manager)
   * a. Configure the portal for the catalog, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.devportal.doc/tapim_tutorial_creating_portal.html)
-  * b. Using the Develop tab in the Sandbiox catalog, create an API, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.toolkit.doc/task_editor_using_editor.html)
+  * b. Using the Develop tab in the Sandbox catalog, create an API, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.toolkit.doc/task_editor_using_editor.html)
   * c. Publish the API into the Gateway, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.toolkit.doc/tapic_publish_api_offline.html)
   * d. Test the API using any tool or built-in API Assembly test tool, see [here](https://www.ibm.com/support/knowledgecenter/SSMNED_2018/com.ibm.apic.toolkit.doc/task_toolkit_testing.html)
- 
+
 
 ## 1.6. Install the Blue API Connect Stack
 
 1. Repeat steps 1 and 2 from the [previous section] or run the build script to create a Blue stack.
 
-2. Since the Blue stack will be restored from the Green stack, you do NOT need to perform steps 3-5. 
+2. Since the Blue stack will be restored from the Green stack, you do NOT need to perform steps 3-5.
 
-Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes host machine(s) if you want to access the consoles since the Blue stack usees the same hostnames as the Green stack but different IP addresses.
+Note: You will need to manually edit the `/etc/hosts` file on the machine(s) where you are running apicup and the web browser if you want to access the console since the Blue stack uses the same hostnames as the Green stack but different IP addresses.
 
 ## 1.7. Perform the Backup from Green API Connect Stack
 
@@ -133,7 +136,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes hos
     ```
     > apicup subsys exec manager backup --debug
     ```
-    Make sure the backup completed successsfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
+    Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
 3. List the backups available with the command:
 
@@ -152,7 +155,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes hos
     ```
     > apicup subsys exec manager restore <backupID> --debug
     ```
-    Make sure the backup completed successsfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
+    Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
 3. The restore should complete in a few minutes. Change any static host entries on your machine.
 
@@ -164,7 +167,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes hos
 
 ## 1.9. Perform Backup and Restore for the Developer Portal
 
-1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure your executing commands from the directory where this file is located. If you make any changes to this file, after the initial install, you will need to run the `apicup subsys install portal --debug` command again.
+1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure your executing commands from the directory where this file is located. If you make any changes to this file, after the initial install, you will need to run the `apicup subsys install portal --debug` command again. Ideally, you back up both the Management and Portal subsystems at the same time, to ensure synchronicity across the services.
 
 2. Switch the Kubernetes context to the Green stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the backup with the command:
     ```
@@ -176,7 +179,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes hos
     "sitesFailed": []
     }
     ```
-    Make sure the backup completed successsfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
+    Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
 3. Examine the backup created with the command
     ```
@@ -188,22 +191,22 @@ Note: You will need to manually edit the `/etc/hosts` file on the Kubernetes hos
 4. Switch to the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the restore with the command:
 
     ```
-    > apicup subsys exec portal restore-all RUN --debug
+    > apicup subsys exec portal restore-all run --debug
     ```
-    Make sure the backup completed successsfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
+    Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
-4. The restore should complete in a few minutes. To view the list of installed and restored sites, run the following command: `apicup subsys exec portal list-sites sites`. Change any static host entries on your machine to validate access to the Portal.
+5. The restore should complete in a few minutes. To view the list of installed and restored sites, run the following command: `apicup subsys exec portal list-sites sites`. Change any static host entries on your machine to validate access to the Portal.
 
-5. The portal content includes three items. Verify the following items are available:
+6. The portal content includes three items. Verify the following items are available:
  - Portal data such as blogs, forums, etc ...
  - Portal Theming (CSS, plugins, etc ...)
  - API Consumers data, published Products & APIs, etc ...
- 
+
 ## 1.10. Perform Backup and Restore for the Analytics service
 
-For Analytics backup, you need to setup S3 storage. These instructions use [minio](https://minio.io/index.html), which is a cloud-independent S3 storage provider.
+For Analytics backup, you need to setup S3 compatible storage. These instructions use [minio](https://minio.io/index.html), which is a cloud-independent S3 storage provider.
 
-1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure your executing commands from the directory where this file is located. If you make any changes to this file after the initial install, you will need to run the `apicup subsys install analytics --debug` command again.
+1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure you are executing commands from the directory where this file is located. If you make any changes to this file after the initial install, you will need to run the `apicup subsys install analytics --debug` command again.
 
 2. You will need to create an S3 repository (for Minio) with the following values:
     * REPO_NAME - myrepo
@@ -219,7 +222,7 @@ For Analytics backup, you need to setup S3 storage. These instructions use [mini
 
     and run the command
     ```
-    apicup subsys exec analytics create-s3-repo myrepo US bucket myrepo.s3repo.com access_key secret_key my_folder "" "" "" 
+    apicup subsys exec analytics create-s3-repo myrepo US bucket myrepo.s3repo.com access_key secret_key my_folder "" "" ""
     ```
 
 3. Verify the repository is created
@@ -231,7 +234,7 @@ For Analytics backup, you need to setup S3 storage. These instructions use [mini
     ```
     > apicup subsys exec analytics backup all mybackup myrepo ""
     ```
-    Make sure the backup completed successsfully. Use the command `apicup subsys exec analytics list-backups myrepo` to verify the backup.
+    Make sure the backup completed successfully. Use the command `apicup subsys exec analytics list-backups myrepo` to verify the backup.
 
 5. Switch the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the restore with the command:
 
@@ -244,7 +247,7 @@ For Analytics backup, you need to setup S3 storage. These instructions use [mini
 
 ## 1.11. Upgrading the Blue API Connect Stack
 
-1. Modify the `apiconnect-up.yaml` to reference the new subsystem images. For example, the manager and gateway subsystems are shown below:
+1. Download the new apicup tooling and upload the new subsystem images to a (new) image repository. If using a new registry, change the registry as for example, the manager and gateway subsystems registry settings shown below:
     ```
     metadata:
       name: manager
@@ -264,18 +267,18 @@ For Analytics backup, you need to setup S3 storage. These instructions use [mini
     .
     ```
 
-2. Switch the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the upgrade of each component. You can use the `install-apic.sh` script to install each subsystem again.
+2. Switch the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the upgrade of each component. You can use the `install-apic.sh` script to install each subsystem again. Keep the suggested order as outlined [here](https://www.ibm.com/support/knowledgecenter/en/SSMNED_2018/com.ibm.apic.install.doc/tapic_install_upgrade_Kubernetes.html)
 
 3. Make sure each subsystem completed successfully.
 
-## 1.12. Perform Testing against upgraded Blue API Connect instance 
+## 1.12. Perform Testing against upgraded Blue API Connect instance
 
 Perform dark launch using the Blue stack to validate that the upgraded version is working with the same APIs published prior to the upgrade. You will need to access the Blue stack from a machine where you can resolve its IP addresses.
 
 You will need a load balancer (ie HAProxy) that is capable of routing between the ingress for the Blue and Green stack if you want a percentage of traffic to route between the different stacks. These instructions are outside the scope of these tutorial.
 
-Once you are satisifed with the functionality of the APIs, you can decommission the Active stack and cut over to the Passive stack, which now becomes the Active stack for your environment.
+Once you are satisfied with the functionality of the APIs, you can decommission the Active stack and cut over to the Passive stack, which now becomes the Active stack for your environment.
 
 ## 1.13. Summary
 
-In this tutorial, you installed two independent stacks, an active stack (ie Green) and a passive stack (ie Blue). The API Connect environment was migrated (ie backup/restore) from the Green to the Blue stack and tested independently. After migration, the Blue stack was upgraded and testing was performed to validate the existing APIs are working. Finally, an load balancer such as HAProxy was used to support load distribution between the Green and Blue stacks.
+In this tutorial, you installed two independent stacks, an active stack (ie Green) and a passive stack (ie Blue). The API Connect environment was migrated (ie backup/restore) from the Green to the Blue stack and tested independently. After migration, the Blue stack was upgraded and testing was performed to validate the existing APIs are working. Finally, a load balancer such as HAProxy was used to support load distribution between the Green and Blue stacks.
