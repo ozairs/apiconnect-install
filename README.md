@@ -208,7 +208,7 @@ For Analytics backup, you need to setup S3 compatible storage. These instruction
 
 1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure you are executing commands from the directory where this file is located. If you make any changes to this file after the initial install, you will need to run the `apicup subsys install analytics --debug` command again.
 
-2. You will need to create an S3 repository (for Minio) with the following values:
+2. You will need to create the same S3 repository (for Minio) with the following values on both the clusters:
     * REPO_NAME - myrepo
     * REGION - US
     * BUCKET - bucket
