@@ -202,6 +202,13 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
  - Portal Theming (CSS, plugins, etc ...)
  - API Consumers data, published Products & APIs, etc ...
 
+ Note: If your portal page shows the message "You don't have access to the portal" after login and clicking on Apps, there is an issue with the site refresh in the current version. As a workaround you can manually trigger the refresh by applying these commands:
+ ```
+ kubectl exec -it <portal-www-pod> -c admin bash -n <namespace>
+```
+Then, run `list_sites` to obtain the uuid of the site you are interested in and run `site_content_refresh -f <site_uuid>`
+
+
 ## 1.10. Perform Backup and Restore for the Analytics service
 
 For Analytics backup, you need to setup S3 compatible storage. These instructions use [minio](https://minio.io/index.html), which is a cloud-independent S3 storage provider.
