@@ -134,7 +134,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
 2. Perform the backup with the command:
 
     ```
-    > apicup subsys exec manager backup --debug
+    apicup subsys exec manager backup --debug
     ```
     Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
@@ -153,7 +153,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
 2. Switch the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the restore with the command:
 
     ```
-    > apicup subsys exec manager restore <backupID> --debug
+    apicup subsys exec manager restore <backupID> --debug
     ```
     Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
@@ -171,7 +171,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
 
 2. Switch the Kubernetes context to the Green stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the backup with the command:
     ```
-    > apicup subsys exec portal backup-all --debug
+    apicup subsys exec portal backup-all --debug
     {
     "sitesBackedUp": [
         "cc4f03be-a8ec-49f8-8c4e-1664e2f1e8ee.00943c28-c961-4307-9b8d-d9e147dab0eb"
@@ -183,7 +183,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
 
 3. Examine the backup created with the command
     ```
-    > apicup subsys exec portal list-backups remote
+    apicup subsys exec portal list-backups remote
     _portal_system_backup-20190621.213929.tar.gz
     portal.cluster.ozairs.fyre.ibm.com@om@sandbox-20190621.213931.tar.gz
     ```
@@ -191,7 +191,7 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
 4. Switch to the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the restore with the command:
 
     ```
-    > apicup subsys exec portal restore-all run --debug
+    apicup subsys exec portal restore-all run --debug
     ```
     Make sure the backup completed successfully. The backup file will be copied into the sFTP server specified in the `apiconnect-up.yaml` file.
 
@@ -212,9 +212,11 @@ Then, run `list_sites` to obtain the uuid of the site you are interested in and 
 
 For Analytics backup, you need to setup S3 compatible storage. These instructions use [minio](https://minio.io/index.html), which is a cloud-independent S3 storage provider.
 
-1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure you are executing commands from the directory where this file is located. If you make any changes to this file after the initial install, you will need to run the `apicup subsys install analytics --debug` command again.
+1. You will need to perform the backup using the `apiconnect-up.yaml` file, so make sure you are executing commands from the directory where this file is located. If you make any changes to this file after the initial install, you will need to run the `apicup subsys install analytics --debug` command again. 
 
-2. You will need to create the same S3 repository (for Minio) with the following values on both the clusters:
+2. Switch to the Kubernetes context to the **Green** stack (ie `export KUBECONFIG=path_to_kubeconfig`). 
+
+3. You will need to create the same S3 repository (for Minio) with the following values on both clusters:
     * REPO_NAME - myrepo
     * REGION - US
     * BUCKET - bucket
@@ -228,28 +230,32 @@ For Analytics backup, you need to setup S3 compatible storage. These instruction
 
     and run the command
     ```
-    apicup subsys exec analytics create-s3-repo myrepo US bucket myrepo.s3repo.com access_key secret_key my_folder "" "" ""
+    apicup subsys exec analytics create-s3-repo myrepo US bucket http://MINIO_HOST:9000 access_key secret_key /tmp "" "" ""
     ```
 
-3. Verify the repository is created
+4. Verify the repository is created
     ```
     apicup subsys exec analytics list-repos
     ```
 
-4. Switch to the Kubernetes context to the Green stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the backup with the command:
+5. Perform the backup with the command:
     ```
-    > apicup subsys exec analytics backup all mybackup myrepo ""
+    apicup subsys exec analytics backup all mybackup myrepo ""
     ```
     Make sure the backup completed successfully. Use the command `apicup subsys exec analytics list-backups myrepo` to verify the backup.
 
-5. Switch the Kubernetes context to the Blue stack (ie `export KUBECONFIG=path_to_kubeconfig`). Perform the restore with the command:
+6. Switch the Kubernetes context to the **Blue** stack (ie `export KUBECONFIG=path_to_kubeconfig`). 
+
+7. Create an S3 repository using the exact same command as before `apicup subsys exec analytics create-s3-repo myrepo US bucket http://MINIO_HOST:9000 access_key secret_key /tmp "" "" ""`
+
+8. Perform the restore with the command:
 
     ```
-    > apicup subsys exec analytics restore all mybackup myrepo  "" true
+    apicup subsys exec analytics restore all mybackup myrepo "" true
     ```
     Make sure the backup completed successfully. The backup file will be copied into the s3 repository.
 
-6. The restore should complete in a few minutes. Change any static host entries on your machine to validate access to the Analytics service.
+9. The restore should complete in a few minutes. Change any static host entries on your machine to validate access to the Analytics service.
 
 ## 1.11. Upgrading the Blue API Connect Stack
 
