@@ -200,14 +200,13 @@ Note: You will need to manually edit the `/etc/hosts` file on the machine(s) whe
 6. The portal content includes three items. Verify the following items are available:
  - Portal data such as blogs, forums, etc ...
  - Portal Theming (CSS, plugins, etc ...)
- - API Consumers data, published Products & APIs, etc ...
+ - API Consumers data, published Products & APIs - This data comes from API Manager sent to Portal.
 
- Note: If your portal page shows the message "You don't have access to the portal" after login and clicking on Apps, there is an issue with the site refresh in the current version. As a workaround you can manually trigger the refresh by applying these commands:
+Note: If your portal page shows the message "You don't have access to the portal" after login and clicking on Apps, there is an issue with the site refresh in the current version. As a workaround you can manually trigger the refresh by applying these commands:
  ```
  kubectl exec -it <portal-www-pod> -c admin bash -n <namespace>
 ```
 Then, run `list_sites` to obtain the uuid of the site you are interested in and run `site_content_refresh -f <site_uuid>`
-
 
 ## 1.10. Perform Backup and Restore for the Analytics service
 
