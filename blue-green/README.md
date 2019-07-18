@@ -233,6 +233,9 @@ For Analytics backup, you need to setup S3 compatible storage. These instruction
     apicup subsys exec analytics create-s3-repo myrepo US bucket http://MINIO_HOST:9000 access_key secret_key /tmp "" "" ""
     ```
 
+    Below is an example command
+    `apicup subsys exec analytics create-s3-repo myrepo US bucket http://9.1.2.3:9000 Z3HNHNW7JJGO3ENLBRX3 ireMmVmsdlS+RDFdqEwCO4+vJj7DFfTjerarJBci /tmp "" "" ""`
+
 4. Verify the repository is created
     ```
     apicup subsys exec analytics list-repos

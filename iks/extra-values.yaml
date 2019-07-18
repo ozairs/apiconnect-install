@@ -1,0 +1,13 @@
+apim:
+ modes:
+   standard:
+     minReplicaCount: 1
+     maxReplicaCount: 1
+     minAvailable: 1
+ resources:
+   requests:
+     cpu: 100m
+     memory: 512Mi
+   limits:
+     cpu: 1500m
+     memory: 1024Mi

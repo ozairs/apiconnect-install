@@ -18,27 +18,24 @@ spec:
         ingress-type: ingress
         mode: dev
         namespace: apic
-        registry: apicup-imgs/2018.4.1.6-ifix1.0-43
+        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1.6-ifix1.0-43
         registry-secret: apiconnect-image-pull-secret
-        storage-class: rook-block
+        storage-class: ibmc-block-gold
       SubsystemProperties:
         secret-name: apiconnect-manager
         target: kubernetes
       endpoints:
-        api-manager-ui: manager.ozairs.fyre.ibm.com
-        cloud-admin-ui: cloud.ozairs.fyre.ibm.com
-        consumer-api: consumer.ozairs.fyre.ibm.com
-        platform-api: platform.ozairs.fyre.ibm.com
+        api-manager-ui: manager.apic2018.tor01.containers.appdomain.cloud
+        cloud-admin-ui: cloud.apic2018.tor01.containers.appdomain.cloud
+        consumer-api: consumer.apic2018.tor01.containers.appdomain.cloud
+        platform-api: platform.apic2018.tor01.containers.appdomain.cloud
       settings:
-        cassandra-backup-protocol: sftp
-        cassandra-backup-host: 9.24.160.16
+        cassandra-backup-path: /backups
         cassandra-backup-port: 22
-        cassandra-backup-path: /ozairs/backups
+        cassandra-backup-protocol: sftp
         cassandra-backup-schedule: 0 0 * * *
-        cassandra-backup-auth-user: ozairs
-        cassandra-backup-auth-pass: cGFzc3dvcmQ=
-        cassandra-cluster-size: 1
-        cassandra-max-memory-gb: 9
+        cassandra-cluster-size: 3
+        cassandra-max-memory-gb: 8
         cassandra-postmortems-path: /cassandra-postmortems
         cassandra-postmortems-port: 22
         cassandra-volume-size-gb: 16
@@ -55,27 +52,23 @@ spec:
         ingress-type: ingress
         mode: dev
         namespace: apic
-        registry: apicup-imgs/2018.4.1.6-ifix1.0-43
+        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1.6-ifix1.0-43
         registry-secret: apiconnect-image-pull-secret
-        storage-class: '-'
+        storage-class: ibmc-block-gold
       SubsystemProperties:
         secret-name: apiconnect-portal
         target: kubernetes
       endpoints:
-        portal-admin: portal-admin.ozairs.fyre.ibm.com
-        portal-www: portal.cluster.ozairs.fyre.ibm.com
+        portal-admin: portal-admin.apic2018.tor01.containers.appdomain.cloud
+        portal-www: portal.apic2018.tor01.containers.appdomain.cloud
       settings:
         admin-storage-size-gb: 1
         backup-storage-size-gb: 5
         db-logs-storage-size-gb: 2
         db-storage-size-gb: 12
-        site-backup-host: apic1-blue.fyre.ibm.com
-        site-backup-path: /ozairs/backups
-        site-backup-auth-user: ozairs
-        site-backup-auth-pass: cGFzc3dvcmQ=
+        site-backup-host: ""
+        site-backup-path: /site-backups
         site-backup-port: 22
-        site-backup-protocol: sftp
-        site-backup-schedule: 0 0 * * *
         www-storage-size-gb: 5
     status: {}
   - apiVersion: v1
@@ -91,17 +84,17 @@ spec:
         mode: dev
         namespace: apic
         registry-secret: apiconnect-image-pull-secret
-        storage-class: '-'
+        storage-class: ibmc-block-gold
       SubsystemProperties:
         secret-name: apiconnect-apigateway
         target: kubernetes
       endpoints:
-        api-gateway: gateway.ozairs.fyre.ibm.com
-        apic-gw-service: gateway-service.ozairs.fyre.ibm.com
+        api-gateway: apigateway.apic2018.tor01.containers.appdomain.cloud
+        apic-gw-service: apigateway-service.apic2018.tor01.containers.appdomain.cloud
       settings:
         enable-tms: false
         image-pull-policy: Always
-        image-repository: datapower-api-gateway
+        image-repository: apic-dev-docker-local.artifactory.swg-devops.com/apiconnect/datapower-api-gateway
         image-tag: latest
         max-cpu: 4
         max-memory-gb: 6
@@ -117,55 +110,25 @@ spec:
     spec:
       ApplianceProperties: null
       CloudProperties:
+        extra-values-file: analytics-extras.yaml
         ingress-type: ingress
         mode: dev
         namespace: apic
-        registry: apicup-imgs/2018.4.1.6-ifix1.0-43
+        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1.6-ifix1.0-43
         registry-secret: apiconnect-image-pull-secret
-        storage-class: rook-block
+        storage-class: ibmc-block-gold
       SubsystemProperties:
         secret-name: apiconnect-analytics
         target: kubernetes
       endpoints:
-        analytics-client: analytics-client.ozairs.fyre.ibm.com
-        analytics-ingestion: analytics-ingest.ozairs.fyre.ibm.com
+        analytics-client: ac.apic2018.tor01.containers.appdomain.cloud
+        analytics-ingestion: ai.apic2018.tor01.containers.appdomain.cloud
       settings:
         coordinating-max-memory-gb: 6
         data-max-memory-gb: 6
         data-storage-size-gb: 200
         master-max-memory-gb: 6
         master-storage-size-gb: 5
-    status: {}
-  - apiVersion: v1
-    kind: apic.ibm.com/GatewaySubsystem
-    metadata:
-      creationTimestamp: "2018-10-24T20:37:09Z"
-      name: gateway
-    spec:
-      ApplianceProperties: null
-      CloudProperties:
-        extra-values-file: gw-extras.yaml
-        ingress-type: ingress
-        mode: dev
-        namespace: apic
-        registry-secret: apiconnect-image-pull-secret
-        storage-class: rook-block
-      SubsystemProperties:
-        secret-name: apiconnect-gateway
-        target: kubernetes
-      endpoints:
-        api-gateway: gateway.ozairs.fyre.ibm.com
-        apic-gw-service: gateway-service.ozairs.fyre.ibm.com
-      settings:
-        enable-tms: true
-        image-pull-policy: Always
-        image-repository: apic-dev-docker-local.artifactory.swg-devops.com/apiconnect/datapower-api-gateway
-        image-tag: latest
-        max-cpu: 4
-        max-memory-gb: 6
-        replica-count: 1
-        tms-peering-storage-size-gb: 10
-        v5-compatibility-mode: true
     status: {}
 status:
   Ready: false

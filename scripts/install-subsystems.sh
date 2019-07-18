@@ -1,17 +1,5 @@
 #!/bin/bash
 
-#README: You must configure your environment parameters in the config.cfg file.
-
-if [ -e $PWD/config.cfg ] 
-then
-    echo 'script config file exists' $(pwd)
-else 
-    echo 'script config file is not available at $(pwd)'
-    exit
-fi
-source $PWD/../scripts/config.cfg; # load the config library functions
-#todo: add validation to make sure file exists
-
 nice_echo() {
     echo -e "\n\033[1;36m >>>>>>>>>> $1 <<<<<<<<<< \033[0m\n"
 }
@@ -42,15 +30,36 @@ check_pods() {
     done
 }
 
-DOCKER_USERNAME=$DOCKER_USERNAME
-DOCKER_PASSWORD=$DOCKER_PASSWORD
-NAMESPACE=$NAMESPACE
-DOCKER_REGISTRY=$DOCKER_REGISTRY
 
-MANAGER_SUBSYS=$MANAGER_SUBSYS
-GATEWAY_SUBSYS=$GATEWAY_SUBSYS
-ANALYTICS_SUBSYS=$ANALYTICS_SUBSYS
-PORTAL_SUBSYS=$PORTAL_SUBSYS
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# no parameters passed, using default config file
+if [ $# -eq 0 ]; then
+    #using default config file
+    if [ -e config.cfg ]; then
+        source config.cfg
+        echo 'Using default config file at ' ${CURRENT_DIR}/config.cfg 
+    else 
+        echo 'No config file passed and default config file is not available at ' ${CURRENT_DIR}/config.cfg 
+        exit
+    fi
+# usage function
+elif [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  echo "Usage: `basename $0` [OPTION] [FILE]...
+  Options:
+  -h, --help        Display this help and exit
+  "
+  exit 0
+# config file passed as argument
+else 
+    FILENAME=$1 #get filename
+    if [ -e $FILENAME ]; then
+        source $FILENAME; # load the file
+        echo 'Using config file located at ' $FILENAME
+    else 
+        echo 'Bad config file passed at ' $FILENAME
+        exit
+    fi
+fi
 
 nice_echo "Check if kubernetes (kubectl) is installed"
 if which kubectl > /dev/null; then

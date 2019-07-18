@@ -1,0 +1,10 @@
+apic-analytics-storage:  
+    initContainers:  
+    - name: sysctl
+      image: busybox
+      imagePullPolicy: IfNotPresent
+      command: ['sysctl', '-w', 'vm.max_map_count=262144']
+      securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          privileged: true
