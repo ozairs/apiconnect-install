@@ -149,6 +149,9 @@ else
   echo 'Sucessfully created item ' $RESPONSE_URL
 fi
 
+#remove temporary file
+rm oauth-provider-tmp.cfg
+
 # ******************** Step 7. Configure OAuth Provider in Sandbox Catalog ********************
 nice_echo "Step 7. Configure OAuth Provider in Sandbox Catalog"
 
