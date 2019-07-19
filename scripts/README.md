@@ -4,9 +4,6 @@ These instructions provide details on how to automate your entire deployment of 
 
 Use the following scripts (in order) to deploy API Connect V2018
 
-- Step 0. Install Kubernetes cluster (install-k8.sh) - *Optional*
-
-   Install a Kubernetes cluster (ie kubeadm), and its command line tools (ie kubectl, helm). The script will also install a storage based on rook. If your using a managed Kubernetes cluster, you don't need to install this script
 
 - Step 1. Install API Connect Subsystems (install-subsystems.sh)
   
@@ -28,6 +25,12 @@ Use the following scripts (in order) to deploy API Connect V2018
 
   This script creates an application subscription to a published product, including registering a redirect URL and creating new application credential.
 
-- Step 5. Publish and Subscribe (run-pub-sub.sh)
+Optional 
+
+- Install Kubernetes cluster (install-k8.sh) - *Optional*
+
+   Install a Kubernetes cluster (ie kubeadm), and its command line tools (ie kubectl, helm). The script will also install a storage based on rook. If your using a managed Kubernetes cluster, you don't need to install this script
+
+- Publish and Subscribe (run-pub-sub.sh)
   
   This script helps in development where you can quickly publish and subscribe to an API product in the Sandbox catalog.
