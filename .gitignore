@@ -1,3 +1,4 @@
 
 .DS_Store
-*.scripts/config.cfg
+scripts/config.cfg
+scripts/config.backup.cfg
