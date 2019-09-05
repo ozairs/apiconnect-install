@@ -17,7 +17,7 @@ Use the following scripts (in order) to deploy API Connect V2018
 
   This script creates a provider organization either from an existing user or inviting a new user. Optionally, if you have created a portal instance, you can provision the portal instance for the catalog.
 
-- Step 4. Deploy API definitions and product (deploy-products.sh)
+- Step 4. Deploy API definitions and product (deploy-api.sh)
 
   This script deploys multiple APIs and an API product, including an OAuth provider. The APIs and products are created within API drafts and published to the catalog (default sandbox catalog)
 
@@ -25,7 +25,7 @@ Use the following scripts (in order) to deploy API Connect V2018
 
   This script creates an application subscription to a published product, including registering a redirect URL and creating new application credential.
 
-Optional 
+**Optional**
 
 - Install Kubernetes cluster (install-k8.sh) - *Optional*
 
@@ -34,3 +34,7 @@ Optional
 - Publish and Subscribe (run-pub-sub.sh)
   
   This script helps in development where you can quickly publish and subscribe to an API product in the Sandbox catalog.
+
+- Test deployed API products (test-api.sh)
+  
+  This script runs a series of tests to validate the deployed apis.

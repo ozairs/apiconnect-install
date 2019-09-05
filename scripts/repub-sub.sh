@@ -4,7 +4,6 @@ nice_echo() {
     echo "\n\033[1;36m >>>>>>>>>> $1 <<<<<<<<<< \033[0m\n"
 }
 
-
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # no parameters passed, using default config file
 if [ $# -eq 0 ]; then
@@ -35,6 +34,10 @@ else
     fi
 fi
 
+RED='\n\033[1;31m'
+GREEN='\n\033[1;32m'
+END_COLOR='\033[0m'
+
 # ******************** Step 1. Login as the pOrg Owner and get token ********************
 nice_echo "Step 1. Login as the pOrg Owner and get token"
 
@@ -46,12 +49,15 @@ TOKEN_RESPONSE=`echo "$RESPONSE" | jq -r '.access_token'`
 
 if [[ $TOKEN_RESPONSE == null ]];   #call failed
 then
- echo 'Failed call with error' $RESPONSE 
+ echo "${RED}FAIL${END_COLOR}"
+ echo 'Error' $RESPONSE 
 elif [[ $TOKEN_RESPONSE == '' ]];   #call failed
 then
- echo 'Failed call with error' $RESPONSE 
+ echo "${RED}FAIL${END_COLOR}"
+ echo 'Error' $RESPONSE 
 else
- echo 'Successfully login and obtained token '
+ echo "${GREEN}SUCCESS${END_COLOR}"
+ echo 'Obtained token '
 fi
 
 # ******************** Step 2. Get Application ********************
@@ -65,25 +71,29 @@ RESPONSE_URL2=`dirname "$RESPONSE_URL" | xargs basename`
 
 if [[ $RESPONSE_URL1 == null ]];   #call failed
 then
- echo 'Failed call with error' $RESPONSE
+  echo "${RED}FAIL${END_COLOR}"
+  echo 'Error' $RESPONSE
  #exit
 else
-  echo 'Sucessfully retrieved item ' $RESPONSE_URL
+  echo "${GREEN}SUCCESS${END_COLOR}"
+  echo 'Retrieved item ' $RESPONSE_URL
 fi
 
 # ******************** Step 3. Get API Product ********************
 nice_echo "Step 3. Get API Product"
 
-RESPONSE=`curl -s -k -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN_RESPONSE" ${APIM_SERVER}/api/catalogs/${pORG_NAME}/${CATALOG_NAME}/products`
+RESPONSE=`curl -s -k -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN_RESPONSE" ${APIM_SERVER}/api/orgs/${pORG_NAME}/drafts/draft-products/${API_PRODUCT_NAME}`
 
-RESPONSE_URL=`echo "$RESPONSE" | jq -r '.results[] | select(.name =="'"${API_PRODUCT_NAME}"'").url'`
+RESPONSE_URL=`echo "$RESPONSE" | jq -r '.results[0].url'`
 
 if [[ $RESPONSE_URL == null ]];   #call failed
 then
- echo 'Failed call with error' $RESPONSE
+ echo "${RED}FAIL${END_COLOR}"
+ echo 'Error' $RESPONSE
  #exit
 else
-  echo 'Sucessfully retrieved item ' $RESPONSE_URL
+  echo "${GREEN}SUCCESS${END_COLOR}"
+  echo 'Retrieved item ' $RESPONSE_URL
 fi
 
 # ******************** Step 4. Publish API Product ********************
@@ -97,13 +107,13 @@ RESPONSE_URL=`echo "$RESPONSE" | jq -r '.url'`
 
 if [[ $RESPONSE_URL == null ]];   #call failed
 then
- echo 'Failed call with error' $RESPONSE
+ echo "${RED}FAIL${END_COLOR}"
+ echo 'Error' $RESPONSE
  #exit
 else
-  echo 'Sucessfully published API product in Drafts ' $RESPONSE_URL
+  echo "${GREEN}SUCCESS${END_COLOR}"
+  echo 'Published API product in Drafts ' $RESPONSE_URL
 fi
-
-nice_echo "Script actions completed. Check logs for more details."
 
 # ******************** Step 5. Create Application Subscription  ********************
 nice_echo "Step 5. Create Application Subscription"
@@ -116,10 +126,12 @@ RESPONSE_URL=`echo "$RESPONSE" | tr '\r\n' ' ' | jq -r '.name'`
 
 if [[ $RESPONSE_URL == null ]];   #call failed
 then
- echo 'Failed call with error' $RESPONSE
+ echo "${RED}FAIL${END_COLOR}"
+ echo 'Error' $RESPONSE
  #exit
 else
-  echo 'Sucessfully modified item ' $RESPONSE_URL
+  echo "${GREEN}SUCCESS${END_COLOR}"
+  echo 'Modified item ' $RESPONSE_URL
 fi
 
 nice_echo "Script actions completed. Check logs for more details."

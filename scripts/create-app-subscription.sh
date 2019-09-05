@@ -138,7 +138,7 @@ fi
 # ******************** Step 6. Get API Product ********************
 nice_echo "Step 6. Get API Product"
 
-RESPONSE=`curl -s -k -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN_RESPONSE" ${APIM_SERVER}/api/catalogs/${pORG_NAME}/${CATALOG_NAME}/products`
+RESPONSE=`curl -s -k -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN_RESPONSE" ${APIM_SERVER}/api/orgs/${pORG_NAME}/drafts/draft-products`
 
 RESPONSE_URL=`echo "$RESPONSE" | jq -r '.results[] | select(.name =="'"${API_PRODUCT_NAME}"'").url'`
 
@@ -150,8 +150,25 @@ else
   echo 'Sucessfully retrieved item ' $RESPONSE_URL
 fi
 
-# ******************** Step 7. Create Application Subscription  ********************
-nice_echo "Step 7. Create Application Subscription"
+# ******************** Step 7. Publish API Product ********************
+nice_echo "Step 7. Publish API Product"
+
+CURL_BODY='{"draft_product_url":"'"${RESPONSE_URL}"'"}'
+
+RESPONSE=`curl -s -k -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN_RESPONSE" -d "$CURL_BODY" ${APIM_SERVER}/api/catalogs/${pORG_NAME}/sandbox/publish-draft-product`
+
+RESPONSE_URL=`echo "$RESPONSE" | jq -r '.url'`
+
+if [[ $RESPONSE_URL == null ]];   #call failed
+then
+ echo 'Failed call with error' $RESPONSE
+ #exit
+else
+  echo 'Sucessfully published API product ' $RESPONSE_URL
+fi
+
+# ******************** Step 8. Create Application Subscription  ********************
+nice_echo "Step 8. Create Application Subscription"
 
 CURL_BODY='{"product_url":"'"${RESPONSE_URL}"'","plan":"default-plan"}'
 

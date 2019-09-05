@@ -14,11 +14,10 @@ spec:
     spec:
       ApplianceProperties: null
       CloudProperties:
-        extra-values-file: 
         ingress-type: ingress
         mode: dev
         namespace: apic
-        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1.6-ifix1.0-43
+        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1-3492
         registry-secret: apiconnect-image-pull-secret
         storage-class: ibmc-block-gold
       SubsystemProperties:
@@ -52,7 +51,7 @@ spec:
         ingress-type: ingress
         mode: dev
         namespace: apic
-        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1.6-ifix1.0-43
+        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1-3492
         registry-secret: apiconnect-image-pull-secret
         storage-class: ibmc-block-gold
       SubsystemProperties:
@@ -92,10 +91,13 @@ spec:
         api-gateway: apigateway.apic2018.tor01.containers.appdomain.cloud
         apic-gw-service: apigateway-service.apic2018.tor01.containers.appdomain.cloud
       settings:
+        enable-high-performance-peering: "true"
         enable-tms: false
         image-pull-policy: Always
         image-repository: apic-dev-docker-local.artifactory.swg-devops.com/apiconnect/datapower-api-gateway
         image-tag: latest
+        monitor-image-repository: apic-dev-docker-local.artifactory.swg-devops.com/k8s-datapower-monitor
+        monitor-image-tag: latest
         max-cpu: 4
         max-memory-gb: 6
         replica-count: 1
@@ -114,7 +116,7 @@ spec:
         ingress-type: ingress
         mode: dev
         namespace: apic
-        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1.6-ifix1.0-43
+        registry: apic-dev-docker-local.artifactory.swg-devops.com/apicup-imgs/2018.4.1-3492
         registry-secret: apiconnect-image-pull-secret
         storage-class: ibmc-block-gold
       SubsystemProperties:
