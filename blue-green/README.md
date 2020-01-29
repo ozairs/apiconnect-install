@@ -60,7 +60,7 @@ The steps to build an API Connect cloud configuration are documented [here](http
     - analytics-ingest.ozairs.fyre.ibm.com 10.1.2.3 ;9.1.2.3
     - analytics-client.ozairs.fyre.ibm.com 10.1.2.3 ;9.1.2.3
 
-2. For this demo environment, we will apply CoreDNS customizations to both the Green (Active) and Blue (Passive) API Connect stacks,  but you may only need to apply it to the Blue (Passive) stack if your built-in DNS server is used in the Green environment. Instructions for CoreDNS configuration are available [here](../master/coredns/README.md). Once you have completed them, move to the next step.
+2. For this demo environment, we will apply CoreDNS customizations to both the Green (Active) and Blue (Passive) API Connect stacks,  but you may only need to apply it to the Blue (Passive) stack if your built-in DNS server is used in the Green environment. Instructions for CoreDNS configuration are available [here](../coredns/README.md). Once you have completed them, move to the next step.
 
 3. For the API manager, make sure you populate the sFTP server where backups are stored.
 
